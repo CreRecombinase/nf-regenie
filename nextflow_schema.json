@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "nf-regenie parameters",
+  "type": "object",
+  "properties": {
+    "outdir": {"type": "string", "default": "results"},
+    "bgen": {"type": ["string", "null"], "description": "BGEN path or pattern (use '@' for chr)."},
+    "bgi": {"type": ["string", "null"], "description": "BGI index path or pattern."},
+    "sample": {"type": ["string", "null"]},
+    "bed": {"type": ["string", "null"], "description": "PLINK bed/bim/fam prefix."},
+    "pgen": {"type": ["string", "null"], "description": "PLINK2 pgen/pvar/psam prefix."},
+    "phenoFile": {"type": "string"},
+    "covarFile": {"type": "string"},
+    "pheno_col_list": {"type": "string", "default": ""},
+    "event_col_list": {"type": "string", "default": ""},
+    "bt": {"type": "boolean", "default": false},
+    "t2e": {"type": "boolean", "default": false},
+    "chr_list": {"type": "string", "default": "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,X"},
+    "bsize1": {"type": "integer", "default": 100, "minimum": 1},
+    "bsize2": {"type": "integer", "default": 200, "minimum": 1},
+    "firth": {"type": "boolean", "default": true},
+    "approx": {"type": "boolean", "default": true},
+    "spa": {"type": "boolean", "default": false},
+    "pThresh": {"type": "number", "default": 0.05, "minimum": 0, "maximum": 1},
+    "minMAC": {"type": "integer", "default": 5, "minimum": 0},
+    "minINFO": {"type": ["number", "null"]},
+    "test_mode": {"type": ["string", "null"], "enum": [null, "additive", "dominant", "recessive"], "default": null},
+    "gz": {"type": "boolean", "default": true},
+    "no_split": {"type": "boolean", "default": false},
+    "lowmem": {"type": "boolean", "default": true},
+    "apply_rint": {"type": "boolean", "default": false},
+    "strict": {"type": "boolean", "default": false},
+    "write_samples": {"type": "boolean", "default": false},
+    "print_pheno": {"type": "boolean", "default": false}
+  },
+  "required": ["phenoFile", "covarFile"],
+  "anyOf": [
+    {"required": ["bgen"]},
+    {"required": ["bed"]},
+    {"required": ["pgen"]}
+  ]
+}
