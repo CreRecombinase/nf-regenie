@@ -1,0 +1,21 @@
+{
+  "outdir": "s3://r6333-pep-nppc-oi-bmn333-dev/gwas_testing_nwk/regenie_example/results_simple",
+  "bed": "s3://r6333-pep-nppc-oi-bmn333-dev/gwas_testing_nwk/regenie_example/example",
+  "bgen": "s3://r6333-pep-nppc-oi-bmn333-dev/gwas_testing_nwk/regenie_example/example.bgen",
+  "bgi":  "s3://r6333-pep-nppc-oi-bmn333-dev/gwas_testing_nwk/regenie_example/example.bgen.bgi",
+  "phenoFile": "s3://r6333-pep-nppc-oi-bmn333-dev/gwas_testing_nwk/regenie_example/phenotype_bin.txt",
+  "covarFile": "s3://r6333-pep-nppc-oi-bmn333-dev/gwas_testing_nwk/regenie_example/covariates.txt",
+  "remove": "s3://r6333-pep-nppc-oi-bmn333-dev/gwas_testing_nwk/regenie_example/fid_iid_to_remove.txt",
+  "exclude": "s3://r6333-pep-nppc-oi-bmn333-dev/gwas_testing_nwk/regenie_example/snplist_rm.txt",
+  "pheno_col_list": "Y1",
+  "bt": true,
+  "bsize1": 100,
+  "lowmem": true,
+  "lowmem_prefix": "tmp_rg",
+  "bsize2": 200,
+  "firth": true,
+  "approx": true,
+  "pThresh": 0.01,
+  "gz": true,
+  "chr_list": "1,2,3"
+}

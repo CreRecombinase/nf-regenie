@@ -31,7 +31,38 @@
     "apply_rint": {"type": "boolean", "default": false},
     "strict": {"type": "boolean", "default": false},
     "write_samples": {"type": "boolean", "default": false},
-    "print_pheno": {"type": "boolean", "default": false}
+    "print_pheno": {"type": "boolean", "default": false},
+  "properties_split_l0": {
+    "split_l0_prefix": {"type": ["string","null"], "default": null, "description": "Prefix for split-L0 master and outputs."},
+    "split_l0_n": {"type": ["integer","null"], "default": null, "minimum": 1, "description": "Number of split-L0 jobs."},
+    "l1_pheno_list": {"type": ["string","null"], "default": null, "description": "Subset of phenotypes to analyze at L1 when using split-L0."},
+    "keep_l0": {"type": "boolean", "default": false, "description": "Keep L0 predictions after L1."}
+  },
+  "step2_properties": {
+    "sex_specific": {"type": ["string","null"], "enum": [null, "male", "female"], "default": null},
+    "af_cc": {"type": "boolean", "default": false},
+    "range": {"type": ["string","null"], "default": null},
+    "starting_block": {"type": ["integer","null"], "default": null, "minimum": 1},
+    "htp": {"type": ["string","null"], "default": null},
+    "exact_p": {"type": "boolean", "default": false},
+    "use_null_firth": {"type": ["string","null"], "default": null},
+    "firth_se": {"type": "boolean", "default": false},
+    "force_qt": {"type": "boolean", "default": false},
+    "ignore_pred": {"type": "boolean", "default": false},
+    "niter": {"type": ["integer","null"], "default": null, "minimum": 1},
+    "maxiter_null": {"type": ["integer","null"], "default": null, "minimum": 1},
+    "maxstep_null": {"type": ["integer","null"], "default": null, "minimum": 1},
+    "nauto": {"type": ["integer","null"], "default": null, "minimum": 1},
+    "maxCatLevels": {"type": ["integer","null"], "default": null, "minimum": 1},
+    "par_region": {"type": ["string","null"], "default": null},
+    "condition_list": {"type": ["string","null"], "default": null},
+    "condition_file": {"type": ["string","null"], "default": null},
+    "interaction": {"type": ["string","null"], "default": null},
+    "interaction_snp": {"type": ["string","null"] , "default": null},
+    "interaction_file": {"type": ["string","null"], "default": null},
+    "interaction_file_reffirst": {"type": "boolean", "default": false},
+    "use_prs": {"type": "boolean", "default": false}
+  }
   },
   "required": ["phenoFile", "covarFile"],
   "anyOf": [
@@ -40,3 +71,22 @@
     {"required": ["pgen"]}
   ]
 }
+    "ref_first": {"type": "boolean", "default": false},
+    "covar_col_list": {"type": ["string","null"], "default": null},
+    "cat_covar_list": {"type": ["string","null"], "default": null},
+    "covar_exclude_list": {"type": ["string","null"], "default": null},
+    "pheno_exclude_list": {"type": ["string","null"], "default": null},
+    "cv": {"type": ["integer","null"], "default": null, "minimum": 2},
+    "loocv": {"type": "boolean", "default": false},
+    "nb": {"type": ["integer","null"], "default": null, "minimum": 1},
+    "minCaseCount": {"type": ["integer","null"], "default": null, "minimum": 0},
+    "lowmem_prefix": {"type": ["string","null"], "default": null},
+    "force_step1": {"type": "boolean", "default": false},
+    "print_prs": {"type": "boolean", "default": false},
+    "write_null_firth": {"type": "boolean", "default": false},
+    "compute_all": {"type": "boolean", "default": false},
+    "use_relative_pred": {"type": "boolean", "default": true},
+    "tpheno_file": {"type": ["string","null"], "default": null},
+    "tpheno_indexCol": {"type": ["integer","null"], "default": null},
+    "tpheno_ignoreCols": {"type": ["string","null"], "default": null},
+    "iid_only": {"type": "boolean", "default": false},
