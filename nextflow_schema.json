@@ -1,92 +1,209 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "nf-regenie parameters",
+  "description": "Parameters for the nf-core REGENIE pipeline. Defines grouped inputs and options for Step 1/2, phenotypes/covariates, genotype sources, and I/O.",
   "type": "object",
-  "properties": {
-    "outdir": {"type": "string", "default": "results"},
-    "bgen": {"type": ["string", "null"], "description": "BGEN path or pattern (use '@' for chr)."},
-    "bgi": {"type": ["string", "null"], "description": "BGI index path or pattern."},
-    "sample": {"type": ["string", "null"]},
-    "bed": {"type": ["string", "null"], "description": "PLINK bed/bim/fam prefix."},
-    "pgen": {"type": ["string", "null"], "description": "PLINK2 pgen/pvar/psam prefix."},
-    "phenoFile": {"type": "string"},
-    "covarFile": {"type": "string"},
-    "pheno_col_list": {"type": "string", "default": ""},
-    "event_col_list": {"type": "string", "default": ""},
-    "bt": {"type": "boolean", "default": false},
-    "t2e": {"type": "boolean", "default": false},
-    "chr_list": {"type": "string", "default": "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,X"},
-    "bsize1": {"type": "integer", "default": 100, "minimum": 1},
-    "bsize2": {"type": "integer", "default": 200, "minimum": 1},
-    "firth": {"type": "boolean", "default": true},
-    "approx": {"type": "boolean", "default": true},
-    "spa": {"type": "boolean", "default": false},
-    "pThresh": {"type": "number", "default": 0.05, "minimum": 0, "maximum": 1},
-    "minMAC": {"type": "integer", "default": 5, "minimum": 0},
-    "minINFO": {"type": ["number", "null"]},
-    "test_mode": {"type": ["string", "null"], "enum": [null, "additive", "dominant", "recessive"], "default": null},
-    "gz": {"type": "boolean", "default": true},
-    "no_split": {"type": "boolean", "default": false},
-    "lowmem": {"type": "boolean", "default": true},
-    "apply_rint": {"type": "boolean", "default": false},
-    "strict": {"type": "boolean", "default": false},
-    "write_samples": {"type": "boolean", "default": false},
-    "print_pheno": {"type": "boolean", "default": false},
-  "properties_split_l0": {
-    "split_l0_prefix": {"type": ["string","null"], "default": null, "description": "Prefix for split-L0 master and outputs."},
-    "split_l0_n": {"type": ["integer","null"], "default": null, "minimum": 1, "description": "Number of split-L0 jobs."},
-    "l1_pheno_list": {"type": ["string","null"], "default": null, "description": "Subset of phenotypes to analyze at L1 when using split-L0."},
-    "keep_l0": {"type": "boolean", "default": false, "description": "Keep L0 predictions after L1."}
+  "$defs": {
+    "mode": {
+      "title": "Analysis mode",
+      "type": "object",
+      "fa_icon": "fas fa-sliders-h",
+      "description": "High-level analysis mode guiding validation and defaults.",
+      "help_text": "Select the trait type you are analyzing. This tightens validation and can be set automatically via profiles.",
+      "properties": {
+        "mode": {
+          "type": ["string", "null"],
+          "enum": [null, "binary", "qt", "t2e"],
+          "default": null,
+          "description": "Analysis mode: 'binary' for case/control, 'qt' for quantitative traits, 't2e' for time-to-event.",
+          "fa_icon": "fas fa-sliders-h"
+        }
+      }
+    },
+    "mode_rules": {
+      "title": "Mode rules",
+      "type": "object",
+      "description": "Schema constraints applied based on analysis mode.",
+      "properties": {},
+      "allOf": [
+        {
+          "if": { "properties": { "mode": { "const": "binary" } }, "required": ["mode"] },
+          "then": { "properties": { "bt": { "const": true } } }
+        },
+        {
+          "if": { "properties": { "mode": { "const": "t2e" } }, "required": ["mode"] },
+          "then": { "required": ["event_col_list"], "properties": { "t2e": { "const": true } } }
+        },
+        {
+          "if": { "properties": { "mode": { "const": "qt" } }, "required": ["mode"] },
+          "then": {
+            "properties": {
+              "bt": { "enum": [false] },
+              "t2e": { "enum": [false] }
+            }
+          }
+        }
+      ]
+    },
+    "io": {
+      "title": "Input/output",
+      "type": "object",
+      "fa_icon": "fas fa-folder-open",
+      "description": "Define where the pipeline should save output data.",
+      "help_text": "Set the output directory for all pipeline results. Use absolute paths for cloud storage.",
+      "properties": {
+        "outdir": {
+          "type": "string",
+          "default": "results",
+          "format": "directory-path",
+          "description": "Output directory for pipeline results. Pipeline writes logs, reports and REGENIE outputs under this path.",
+          "fa_icon": "fas fa-folder-open"
+        }
+      }
+    },
+    "genotype": {
+      "title": "Genotype input",
+      "type": "object",
+      "fa_icon": "fas fa-dna",
+      "description": "Specify genotype inputs for Step 1/2. Use '@' in paths to expand per-chromosome shards.",
+      "help_text": "Provide one of BGEN, BED (PLINK), or PGEN (PLINK2) inputs. Use '@' in file patterns to fan-out across chromosomes.",
+      "properties": {
+        "bgen": { "type": ["string", "null"], "description": "Input BGEN genotype file path or pattern. Use '@' placeholder to expand per-chromosome sharding (e.g. s3://.../chr@.bgen).", "fa_icon": "fas fa-dna" },
+        "bgi": { "type": ["string", "null"], "description": "Index .bgi file corresponding to BGEN input. If 'bgen' uses '@', this may also use '@' to expand per-chromosome.", "fa_icon": "fas fa-file" },
+        "sample": { "type": ["string", "null"], "description": "Sample file corresponding to BGEN input ('.sample').", "fa_icon": "far fa-id-card" },
+        "bed": { "type": ["string", "null"], "description": "PLINK bed/bim/fam prefix. Provide path prefix without extension; pipeline expects .bed/.bim/.fam.", "fa_icon": "fas fa-dna" },
+        "pgen": { "type": ["string", "null"], "description": "PLINK2 pgen/pvar/psam prefix. Provide path prefix without extension; pipeline expects .pgen/.pvar/.psam.", "fa_icon": "fas fa-dna" },
+        "input_mode": { "type": ["string","null"], "enum": [null, "bgen", "bed", "pgen"], "default": null, "description": "Force genotype source for Step 1/2 ('bgen'|'bed'|'pgen'). If null, Step 1 prefers BED/PGEN then BGEN; Step 2 prefers BGEN then BED/PGEN." },
+        "ref_first": { "type": "boolean", "description": "Use first allele as reference for BGEN or PLINK BED input (--ref-first)." },
+        "keep": { "type": ["string","null"], "default": null, "description": "Inclusion file listing FID IID pairs to retain.", "fa_icon": "fas fa-filter" },
+        "remove": { "type": ["string","null"], "default": null, "description": "Exclusion file listing FID IID pairs to remove.", "fa_icon": "fas fa-filter" },
+        "extract": { "type": ["string","null"], "default": null, "description": "Variant inclusion list (IDs) to keep.", "fa_icon": "fas fa-filter" },
+        "exclude": { "type": ["string","null"], "default": null, "description": "Variant exclusion list (IDs) to remove.", "fa_icon": "fas fa-filter" }
+      }
+    },
+    "phenotypes": {
+      "title": "Phenotypes/covariates",
+      "type": "object",
+      "fa_icon": "fas fa-user",
+      "description": "Phenotype and covariate inputs for Step 1 and 2.",
+      "help_text": "Point to phenotype and covariate files, and optionally select or exclude specific columns.",
+      "properties": {
+        "phenoFile": { "type": "string", "description": "Phenotype file with header 'FID IID Y1 ...'. Missing values must be 'NA'. Used in Step 1 and Step 2.", "fa_icon": "fas fa-file-alt" },
+        "covarFile": { "type": "string", "description": "Covariate file with header 'FID IID C1 ...'. Samples with missing covariates are removed. Use same file in Step 1 and 2.", "fa_icon": "fas fa-file-alt" },
+        "pheno_col_list": { "type": "string", "description": "Comma-separated list of phenotype names to include (equivalent to --phenoColList)." },
+        "event_col_list": { "type": "string", "description": "Comma-separated list of event time columns for time-to-event analyses (equivalent to --eventColList)." },
+        "pheno_exclude_list": { "type": ["string","null"], "default": null, "description": "Comma-separated list of phenotypes to exclude (--phenoExcludeList)." },
+        "covar_col_list": { "type": ["string","null"], "default": null, "description": "Comma-separated list of covariates to include (--covarColList)." },
+        "cat_covar_list": { "type": ["string","null"], "default": null, "description": "Comma-separated list of categorical covariates (--catCovarList)." },
+        "covar_exclude_list": { "type": ["string","null"], "default": null, "description": "Comma-separated list of covariates to exclude (--covarExcludeList)." },
+        "tpheno_file": { "type": ["string","null"], "default": null, "description": "Transposed phenotype file to use instead of standard format (--tpheno-file)." },
+        "tpheno_indexCol": { "type": ["integer","null"], "default": null, "description": "Index of phenotype name column in transposed phenotype file (--tpheno-indexCol)." },
+        "tpheno_ignoreCols": { "type": ["string","null"], "default": null, "description": "Comma-separated indices of columns to ignore in transposed phenotype file (--tpheno-ignoreCols)." },
+        "iid_only": { "type": "boolean", "description": "Transposed phenotype header only contains IID (assumes FID=IID) (--iid-only)." }
+      }
+    },
+    "step1": {
+      "title": "Step 1 options",
+      "type": "object",
+      "fa_icon": "fas fa-layer-group",
+      "description": "Whole-genome model fitting and prediction settings.",
+      "help_text": "Controls for REGENIE Step 1: modeling, cross-validation, memory mode, and generating predictions (LOCO/PRS).",
+      "properties": {
+        "bt": { "type": "boolean", "description": "Analyze binary traits in Step 1/2 (--bt)." },
+        "t2e": { "type": "boolean", "description": "Analyze time-to-event traits (--t2e)." },
+        "bsize1": { "type": "integer", "default": 100, "minimum": 1, "description": "Block size for Step 1 (--bsize)." },
+        "lowmem": { "type": "boolean", "default": true, "description": "Enable low-memory mode in Step 1 to use disk-backed temporary files (--lowmem)." },
+        "apply_rint": { "type": "boolean", "description": "Apply rank-based inverse normal transform to QTs in Step 1 (--apply-rint)." },
+        "strict": { "type": "boolean", "description": "Remove samples with missing values at any phenotype in Step 1 and Step 2 (--strict)." },
+        "cv": { "type": ["integer","null"], "default": null, "minimum": 2, "description": "K-fold cross validation for Step 1 when applicable (--cv)." },
+        "loocv": { "type": "boolean", "description": "Use leave-one-out cross validation in Step 1 (--loocv)." },
+        "nb": { "type": ["integer","null"], "default": null, "minimum": 1, "description": "Number of blocks for cross validation when applicable (--nb)." },
+        "minCaseCount": { "type": ["integer","null"], "default": null, "minimum": 0, "description": "Minimum case count required for binary traits in Step 1 (--minCaseCount)." },
+        "lowmem_prefix": { "type": ["string","null"], "default": null, "description": "Prefix for low-memory temporary files in Step 1 (--lowmem-prefix)." },
+        "force_step1": { "type": "boolean", "description": "Force Step 1 to run even if predictions already exist (--force-step1)." },
+        "print_prs": { "type": "boolean", "description": "Write whole-genome PRS (non-LOCO) predictions in Step 1 (--print-prs)." },
+        "write_null_firth": { "type": "boolean", "description": "Write null estimates for approximate Firth in Step 1/2 (--write-null-firth)." },
+        "compute_all": { "type": "boolean", "description": "Write null Firth estimates for all chromosomes regardless of genotype file (--compute-all)." },
+        "use_relative_pred": { "type": "boolean", "default": true, "description": "Use relative paths in Step 1 prediction list to ease staging in Nextflow." },
+        "split_l0_prefix": { "type": ["string","null"], "default": null, "description": "Prefix for split-L0 mode. Generates '<prefix>.master' and L0/L1 outputs." },
+        "split_l0_n": { "type": ["integer","null"], "default": null, "minimum": 1, "description": "Number of split-L0 jobs (K) to run in parallel." },
+        "l1_pheno_list": { "type": ["string","null"], "default": null, "description": "Comma-separated subset of phenotypes to analyze at L1 when using split-L0." },
+        "keep_l0": { "type": "boolean", "description": "Keep L0 predictions on disk after L1 completes (--keep-l0)." }
+      }
+    },
+    "step2": {
+      "title": "Step 2 options",
+      "type": "object",
+      "fa_icon": "fas fa-chart-line",
+      "description": "Association testing and summary statistics settings.",
+      "help_text": "Controls for REGENIE Step 2: variant filters, model settings, regions, interactions, and output formatting.",
+      "properties": {
+        "chr_list": { "type": "string", "default": "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,X", "description": "Comma-separated list of chromosomes to test in Step 2 (passed to --chr per value).", "examples": ["1,2,3", "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,X"], "pattern": "^\\s*[0-9XYxy]+(\\s*,\\s*[0-9XYxy]+)*\\s*$" },
+        "bsize2": { "type": "integer", "default": 200, "minimum": 1, "description": "Block size for Step 2 (--bsize)." },
+        "firth": { "type": "boolean", "default": true, "description": "Use Firth LRT fallback for small p-values in Step 2 (--firth)." },
+        "approx": { "type": "boolean", "default": true, "description": "Use approximate Firth LRT when --firth is enabled (--approx)." },
+        "spa": { "type": "boolean", "description": "Use Saddlepoint approximation fallback for small p-values (--spa)." },
+        "pThresh": { "type": "number", "default": 0.05, "minimum": 0, "maximum": 1, "description": "P-value threshold below which to apply Firth/SPA corrections (--pThresh)." },
+        "minMAC": { "type": "integer", "default": 5, "minimum": 0, "description": "Minimum minor allele count threshold when testing variants (--minMAC)." },
+        "minINFO": { "type": ["number", "null"], "default": null, "description": "Minimum imputation info score for variant inclusion in Step 2 (--minINFO)." },
+        "test_mode": { "type": ["string", "null"], "enum": [null, "additive", "dominant", "recessive"], "default": "additive", "description": "Genetic model to test in Step 2 (--test). Default: additive." },
+        "gz": { "type": "boolean", "default": true, "description": "Gzip-compress REGENIE outputs (--gz)." },
+        "no_split": { "type": "boolean", "description": "Write summary statistics for all traits to a single file (--no-split)." },
+        "force_impute": { "type": "boolean", "description": "Keep and impute missing QT observations in Step 2 (--force-impute)." },
+        "sex_specific": { "type": ["string","null"], "enum": [null, "male", "female"], "default": null, "description": "Perform sex-specific analyses for 'male' or 'female' (--sex-specific)." },
+        "af_cc": { "type": "boolean", "description": "Output A1FREQ in cases and controls separately in Step 2 results (--af-cc)." },
+        "range": { "type": ["string","null"], "default": null, "description": "Chromosome region to test in Step 2 (CHR:MINPOS-MAXPOS) (--range).", "examples": ["1:1000000-5000000"], "pattern": "^[0-9XYxy]+:[0-9]+-[0-9]+$" },
+        "starting_block": { "type": ["integer","null"], "default": null, "minimum": 1, "description": "Start Step 2 at a specific block/set number (--starting-block)." },
+        "htp": { "type": ["string","null"], "default": null, "description": "Write Step 2 summary stats in HTP format (--htp)." },
+        "exact_p": { "type": "boolean", "description": "Write exact p-values for logistic models where applicable (--exact-p)." },
+        "use_null_firth": { "type": ["string","null"], "default": null, "description": "List file of null estimates for approximate Firth to reuse in Step 2 (--use-null-firth)." },
+        "firth_se": { "type": "boolean", "description": "Compute SE from effect size and LRT p-value under Firth correction (--firth-se)." },
+        "force_qt": { "type": "boolean", "description": "Force QT model for binary traits (--force-qt)." },
+        "ignore_pred": { "type": "boolean", "description": "Ignore Step 1 predictions in Step 2 (--ignore-pred)." },
+        "niter": { "type": ["integer","null"], "default": null, "minimum": 1, "description": "Maximum number of iterations for logistic regression (--niter)." },
+        "maxiter_null": { "type": ["integer","null"], "default": null, "minimum": 1, "description": "Max iterations for logistic model with Firth penalty under the null (--maxiter-null)." },
+        "maxstep_null": { "type": ["integer","null"], "default": null, "minimum": 1, "description": "Max step size for logistic model with Firth penalty under the null (--maxstep-null)." },
+        "nauto": { "type": ["integer","null"], "default": null, "minimum": 1, "description": "Number of autosomal chromosomes for non-human studies (--nauto)." },
+        "maxCatLevels": { "type": ["integer","null"], "default": null, "minimum": 1, "description": "Maximum number of levels allowed for categorical covariates (--maxCatLevels)." },
+        "par_region": { "type": ["string","null"], "default": null, "description": "Build code or bounds for chrX PAR regions (e.g., b36/b37/b38 or 'start,end' of non-PAR) (--par-region).", "examples": ["b38", "hg19", "2781479,155701383"], "pattern": "^(b36|b37|b38|hg18|hg19|hg38|[0-9]+\\s*,\\s*[0-9]+)$" },
+        "condition_list": { "type": ["string","null"], "default": null, "description": "Comma-separated list of variant IDs to condition on (--condition-list)." },
+        "condition_file": { "type": ["string","null"], "default": null, "description": "File listing variant IDs to condition on (--condition-file)." },
+        "interaction": { "type": ["string","null"], "default": null, "description": "Covariate name for genotype-covariate interaction testing (--interaction)." },
+        "interaction_snp": { "type": ["string","null"], "default": null, "description": "Variant ID to test genotype-by-variant interaction (--interaction-snp)." },
+        "interaction_file": { "type": ["string","null"], "default": null, "description": "File with variant-covariate interaction pairs (--interaction-file)." },
+        "interaction_file_reffirst": { "type": "boolean", "description": "Interpret first allele as reference in interaction file (--interaction-file-reffirst)." },
+        "use_prs": { "type": "boolean", "description": "Use PRS predictions from Step 1 instead of LOCO (--use-prs)." }
+      }
+    },
+    "resources": {
+      "title": "Resources",
+      "type": "object",
+      "fa_icon": "fas fa-microchip",
+      "description": "Optional resource overrides for Nextflow processes.",
+      "help_text": "If needed, override CPU threads and memory for Step 1/2 processes set by your profile.",
+      "properties": {
+        "step1_cpus": { "type": ["integer","null"], "default": null, "minimum": 1, "description": "Override CPU threads for Step 1 processes in Nextflow (maps to --threads)." },
+        "step1_mem": { "type": ["string","null"], "default": null, "description": "Override memory for Step 1 processes in Nextflow (e.g. '32 GB')." },
+        "step2_cpus": { "type": ["integer","null"], "default": null, "minimum": 1, "description": "Override CPU threads for Step 2 processes in Nextflow (maps to --threads)." },
+        "step2_mem": { "type": ["string","null"], "default": null, "description": "Override memory for Step 2 processes in Nextflow (e.g. '24 GB')." }
+      }
+    }
   },
-  "step2_properties": {
-    "sex_specific": {"type": ["string","null"], "enum": [null, "male", "female"], "default": null},
-    "af_cc": {"type": "boolean", "default": false},
-    "range": {"type": ["string","null"], "default": null},
-    "starting_block": {"type": ["integer","null"], "default": null, "minimum": 1},
-    "htp": {"type": ["string","null"], "default": null},
-    "exact_p": {"type": "boolean", "default": false},
-    "use_null_firth": {"type": ["string","null"], "default": null},
-    "firth_se": {"type": "boolean", "default": false},
-    "force_qt": {"type": "boolean", "default": false},
-    "ignore_pred": {"type": "boolean", "default": false},
-    "niter": {"type": ["integer","null"], "default": null, "minimum": 1},
-    "maxiter_null": {"type": ["integer","null"], "default": null, "minimum": 1},
-    "maxstep_null": {"type": ["integer","null"], "default": null, "minimum": 1},
-    "nauto": {"type": ["integer","null"], "default": null, "minimum": 1},
-    "maxCatLevels": {"type": ["integer","null"], "default": null, "minimum": 1},
-    "par_region": {"type": ["string","null"], "default": null},
-    "condition_list": {"type": ["string","null"], "default": null},
-    "condition_file": {"type": ["string","null"], "default": null},
-    "interaction": {"type": ["string","null"], "default": null},
-    "interaction_snp": {"type": ["string","null"] , "default": null},
-    "interaction_file": {"type": ["string","null"], "default": null},
-    "interaction_file_reffirst": {"type": "boolean", "default": false},
-    "use_prs": {"type": "boolean", "default": false}
-  }
-  },
-  "required": ["phenoFile", "covarFile"],
+  
   "anyOf": [
-    {"required": ["bgen"]},
-    {"required": ["bed"]},
-    {"required": ["pgen"]}
-  ]
+    { "required": ["bgen"] },
+    { "required": ["bed"] },
+    { "required": ["pgen"] }
+  ],
+  "allOf": [
+    { "$ref": "#/$defs/mode" },
+    { "$ref": "#/$defs/io" },
+    { "$ref": "#/$defs/genotype" },
+    { "$ref": "#/$defs/phenotypes" },
+    { "$ref": "#/$defs/step1" },
+    { "$ref": "#/$defs/step2" },
+    { "$ref": "#/$defs/resources" },
+    { "$ref": "#/$defs/mode_rules" }
+  ],
+  "required": ["phenoFile", "covarFile"]
 }
-    "ref_first": {"type": "boolean", "default": false},
-    "covar_col_list": {"type": ["string","null"], "default": null},
-    "cat_covar_list": {"type": ["string","null"], "default": null},
-    "covar_exclude_list": {"type": ["string","null"], "default": null},
-    "pheno_exclude_list": {"type": ["string","null"], "default": null},
-    "cv": {"type": ["integer","null"], "default": null, "minimum": 2},
-    "loocv": {"type": "boolean", "default": false},
-    "nb": {"type": ["integer","null"], "default": null, "minimum": 1},
-    "minCaseCount": {"type": ["integer","null"], "default": null, "minimum": 0},
-    "lowmem_prefix": {"type": ["string","null"], "default": null},
-    "force_step1": {"type": "boolean", "default": false},
-    "print_prs": {"type": "boolean", "default": false},
-    "write_null_firth": {"type": "boolean", "default": false},
-    "compute_all": {"type": "boolean", "default": false},
-    "use_relative_pred": {"type": "boolean", "default": true},
-    "tpheno_file": {"type": ["string","null"], "default": null},
-    "tpheno_indexCol": {"type": ["integer","null"], "default": null},
-    "tpheno_ignoreCols": {"type": ["string","null"], "default": null},
-    "iid_only": {"type": "boolean", "default": false},
