@@ -1,0 +1,19 @@
+{
+  "mode": "t2e",
+  "outdir": "results/t2e_pgen",
+  "pgen": "/data/cohort/plink2_prefix",
+  "phenoFile": "/data/pheno/phenotypes_t2e.txt",
+  "covarFile": "/data/pheno/covariates.txt",
+  "pheno_col_list": "SURVIVE",
+  "event_col_list": "EVENT_TIME",
+  "t2e": true,
+  "bt": false,
+  "bsize1": 100,
+  "bsize2": 200,
+  "firth": true,
+  "approx": true,
+  "pThresh": 0.05,
+  "minMAC": 5,
+  "gz": true,
+  "chr_list": "1,2,3,4,5"
+}

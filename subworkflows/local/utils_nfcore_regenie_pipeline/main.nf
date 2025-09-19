@@ -1,5 +1,5 @@
 //
-// Subworkflow with functionality specific to the nf-core/regenie pipeline
+// Subworkflow with functionality specific to the CreRecombinase/nf-regenie pipeline
 //
 
 /*

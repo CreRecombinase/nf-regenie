@@ -10,10 +10,10 @@ process REGENIE_STEP1 {
   tuple val(geno_mode), val(geno_main), val(bgi), val(sample)
   path pheno
   path covar
-  path keepfile
-  path removefile
-  path extractfile
-  path excludefile
+  path keepfile, optional: true
+  path removefile, optional: true
+  path extractfile, optional: true
+  path excludefile, optional: true
   val  pheno_cols
   val  event_cols
 
@@ -27,7 +27,7 @@ process REGENIE_STEP1 {
   script:
   def traitFlag = params.bt ? '--bt' : (params.t2e ? '--t2e' : '--qt')
   def refFirst  = params.ref_first ? "--ref-first" : ""
-  def genoFlag  = (geno_mode=='bgen') ? "--bgen ${geno_main} ${bgi ? \"--bgi ${bgi}\" : ''} ${sample ? \"--sample ${sample}\" : ''} ${refFirst}"
+  def genoFlag  = (geno_mode=='bgen') ? "--bgen ${geno_main} ${bgi ? "--bgi ${bgi}" : ''} ${sample ? "--sample ${sample}" : ''} ${refFirst}"
                  : (geno_mode=='bed') ? "--bed ${geno_main} ${refFirst}"
                  : "--pgen ${geno_main}"
   def phenoCols = pheno_cols ? "--phenoColList ${pheno_cols}" : ""
@@ -88,10 +88,10 @@ process FIX_PRED {
   script:
   """
   set -euo pipefail
-  awk '{print}' ${pred_list} | while read -r pheno fname; do \
-    base=\$(basename \"\${fname}\"); \
-    cp -f \"\${fname}\" \"\${base}\"; \
-    echo \"\${pheno} \${base}\"; \
+  awk '{print}' ${pred_list} | while read -r pheno fname; do
+    base=\$(basename "\${fname}")
+    cp -f "\${fname}" "\${base}"
+    echo "\${pheno} \${base}"
   done > fit_step1_pred.fixed.list
   """
 }
@@ -109,10 +109,10 @@ process REGENIE_STEP2_SNV {
   path pheno
   path covar
   path pred_list
-  path keepfile
-  path removefile
-  path extractfile
-  path excludefile
+  path keepfile, optional: true
+  path removefile, optional: true
+  path extractfile, optional: true
+  path excludefile, optional: true
 
   output:
   path "*.regenie*", emit: sumstats
@@ -121,7 +121,7 @@ process REGENIE_STEP2_SNV {
 
   script:
   def traitFlag  = params.bt ? '--bt' : (params.t2e ? '--t2e' : '--qt')
-  def genoFlag   = (geno_mode=='bgen') ? "--bgen ${geno_shard} ${bgi ? \"--bgi ${bgi}\" : ''} ${sample ? \"--sample ${sample}\" : ''}"
+  def genoFlag   = (geno_mode=='bgen') ? "--bgen ${geno_shard} ${bgi ? "--bgi ${bgi}" : ''} ${sample ? "--sample ${sample}" : ''}"
                   : (geno_mode=='bed') ? "--bed ${geno_shard}" : "--pgen ${geno_shard}"
   def keep       = keepfile ? "--keep ${keepfile}" : ""
   def remove     = removefile ? "--remove ${removefile}" : ""
@@ -195,10 +195,10 @@ process REGENIE_STEP1_SPLIT_INIT {
   tuple val(geno_mode), val(geno_main), val(bgi), val(sample)
   path pheno
   path covar
-  path keepfile
-  path removefile
-  path extractfile
-  path excludefile
+  path keepfile, optional: true
+  path removefile, optional: true
+  path extractfile, optional: true
+  path excludefile, optional: true
   val  pheno_cols
   val  event_cols
 
@@ -209,7 +209,7 @@ process REGENIE_STEP1_SPLIT_INIT {
   script:
   def traitFlag = params.bt ? '--bt' : (params.t2e ? '--t2e' : '--qt')
   def refFirst  = params.ref_first ? "--ref-first" : ""
-  def genoFlag  = (geno_mode=='bgen') ? "--bgen ${geno_main} ${bgi ? \"--bgi ${bgi}\" : ''} ${sample ? \"--sample ${sample}\" : ''} ${refFirst}"
+  def genoFlag  = (geno_mode=='bgen') ? "--bgen ${geno_main} ${bgi ? "--bgi ${bgi}" : ''} ${sample ? "--sample ${sample}" : ''} ${refFirst}"
                  : (geno_mode=='bed') ? "--bed ${geno_main} ${refFirst}"
                  : "--pgen ${geno_main}"
   def phenoCols = pheno_cols ? "--phenoColList ${pheno_cols}" : ""

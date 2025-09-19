@@ -1,107 +1,161 @@
 <h1>
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/images/nf-core-regenie_logo_dark.png">
-    <img alt="nf-core/regenie" src="docs/images/nf-core-regenie_logo_light.png">
+    <img alt="CreRecombinase/nf-regenie" src="docs/images/nf-core-regenie_logo_light.png">
   </picture>
 </h1>
 
-[![GitHub Actions CI Status](https://github.com/nf-core/regenie/actions/workflows/nf-test.yml/badge.svg)](https://github.com/nf-core/regenie/actions/workflows/nf-test.yml)
-[![GitHub Actions Linting Status](https://github.com/nf-core/regenie/actions/workflows/linting.yml/badge.svg)](https://github.com/nf-core/regenie/actions/workflows/linting.yml)[![AWS CI](https://img.shields.io/badge/CI%20tests-full%20size-FF9900?labelColor=000000&logo=Amazon%20AWS)](https://nf-co.re/regenie/results)[![Cite with Zenodo](http://img.shields.io/badge/DOI-10.5281/zenodo.XXXXXXX-1073c8?labelColor=000000)](https://doi.org/10.5281/zenodo.XXXXXXX)
-[![nf-test](https://img.shields.io/badge/unit_tests-nf--test-337ab7.svg)](https://www.nf-test.com)
+[![GitHub Actions CI Status](https://github.com/CreRecombinase/nf-regenie/actions/workflows/nf-test.yml/badge.svg)](https://github.com/CreRecombinase/nf-regenie/actions/workflows/nf-test.yml)
+[![GitHub Actions Linting Status](https://github.com/CreRecombinase/nf-regenie/actions/workflows/linting.yml/badge.svg)](https://github.com/CreRecombinase/nf-regenie/actions/workflows/linting.yml)
+[![Launch on Seqera Platform](https://img.shields.io/badge/Launch%20%F0%9F%9A%80-Seqera%20Platform-%234256e7)](https://cloud.seqera.io/launch?pipeline=https://github.com/CreRecombinase/nf-regenie)
 
-[![Nextflow](https://img.shields.io/badge/version-%E2%89%A524.10.5-green?style=flat&logo=nextflow&logoColor=white&color=%230DC09D&link=https%3A%2F%2Fnextflow.io)](https://www.nextflow.io/)
-[![nf-core template version](https://img.shields.io/badge/nf--core_template-3.3.2-green?style=flat&logo=nfcore&logoColor=white&color=%2324B064&link=https%3A%2F%2Fnf-co.re)](https://github.com/nf-core/tools/releases/tag/3.3.2)
-[![run with conda](http://img.shields.io/badge/run%20with-conda-3EB049?labelColor=000000&logo=anaconda)](https://docs.conda.io/en/latest/)
-[![run with docker](https://img.shields.io/badge/run%20with-docker-0db7ed?labelColor=000000&logo=docker)](https://www.docker.com/)
-[![run with singularity](https://img.shields.io/badge/run%20with-singularity-1d355c.svg?labelColor=000000)](https://sylabs.io/docs/)
-[![Launch on Seqera Platform](https://img.shields.io/badge/Launch%20%F0%9F%9A%80-Seqera%20Platform-%234256e7)](https://cloud.seqera.io/launch?pipeline=https://github.com/nf-core/regenie)
+## Overview
 
-[![Get help on Slack](http://img.shields.io/badge/slack-nf--core%20%23regenie-4A154B?labelColor=000000&logo=slack)](https://nfcore.slack.com/channels/regenie)[![Follow on Bluesky](https://img.shields.io/badge/bluesky-%40nf__core-1185fe?labelColor=000000&logo=bluesky)](https://bsky.app/profile/nf-co.re)[![Follow on Mastodon](https://img.shields.io/badge/mastodon-nf__core-6364ff?labelColor=FFFFFF&logo=mastodon)](https://mstdn.science/@nf_core)[![Watch on YouTube](http://img.shields.io/badge/youtube-nf--core-FF0000?labelColor=000000&logo=youtube)](https://www.youtube.com/c/nf-core)
+CreRecombinase/nf-regenie is a Nextflow pipeline that runs genome-wide association studies (GWAS) with REGENIE (Step 1 and Step 2). It accepts common genotype formats (BGEN, PLINK BED, PLINK PGEN) and produces association results alongside a consolidated MultiQC report and Nextflow execution metadata.
 
-## Introduction
+Key features:
 
-**nf-core/regenie** is a bioinformatics pipeline that ...
+- Simple presets for binary/quantitative/time-to-event phenotypes
+- Multiple genotype input modes: BGEN, BED, or PGEN
+- Optional split-L0 and CV settings for Step 1
+- Containerised execution via Docker/Apptainer/Conda or Wave
+- Reproducible runs with pinned Nextflow version and params files
 
-<!-- TODO nf-core:
-   Complete this sentence with a 2-3 sentence summary of what types of data the pipeline ingests, a brief overview of the
-   major pipeline sections and the types of output it produces. You're giving an overview to someone new
-   to nf-core here, in 15-20 seconds. For an example, see https://github.com/nf-core/rnaseq/blob/master/README.md#introduction
--->
+## Requirements
 
-<!-- TODO nf-core: Include a figure that guides the user through the major workflow steps. Many nf-core
-     workflows use the "tube map" design for that. See https://nf-co.re/docs/guidelines/graphic_design/workflow_diagrams#examples for examples.   -->
-<!-- TODO nf-core: Fill in short bullet-pointed list of the default steps in the pipeline -->1. Read QC ([`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/))2. Present QC for raw reads ([`MultiQC`](http://multiqc.info/))
+- Nextflow >= 24.10.5
+- Java 11 or 17
+- One of: Docker, Apptainer/Singularity, Podman, or Conda/Mamba
 
-## Usage
+Optional: Seqera Wave (`-profile wave`).
 
-> [!NOTE]
-> If you are new to Nextflow and nf-core, please refer to [this page](https://nf-co.re/docs/usage/installation) on how to set-up Nextflow. Make sure to [test your setup](https://nf-co.re/docs/usage/introduction#how-to-run-a-pipeline) with `-profile test` before running the workflow on actual data.
+## Quickstart
 
-<!-- TODO nf-core: Describe the minimum required steps to execute the pipeline, e.g. how to prepare samplesheets.
-     Explain what rows and columns represent. For instance (please edit as appropriate):
-
-First, prepare a samplesheet with your input data that looks as follows:
-
-`samplesheet.csv`:
-
-```csv
-sample,fastq_1,fastq_2
-CONTROL_REP1,AEG588A1_S1_L002_R1_001.fastq.gz,AEG588A1_S1_L002_R2_001.fastq.gz
-```
-
-Each row represents a fastq file (single-end) or a pair of fastq files (paired end).
-
--->
-
-Now, you can run the pipeline using:
-
-<!-- TODO nf-core: update the following command to include all required parameters for a minimal example -->
+Minimal BGEN example:
 
 ```bash
-nextflow run nf-core/regenie \
-   -profile <docker/singularity/.../institute> \
-   --input samplesheet.csv \
-   --outdir <OUTDIR>
+nextflow run CreRecombinase/nf-regenie \
+  -profile docker,bgen \
+  --bgen "/path/to/chr*.bgen" \
+  --bgi "/path/to/chr*.bgi" \
+  --sample /path/to/cohort.sample \
+  --phenoFile /path/to/pheno.tsv \
+  --covarFile /path/to/covar.tsv \
+  --pheno_col_list "BMI" \
+  --covar_col_list "AGE,SEX,PC1,PC2,PC3" \
+  --outdir results
 ```
 
-> [!WARNING]
-> Please provide pipeline parameters via the CLI or Nextflow `-params-file` option. Custom config files including those provided by the `-c` Nextflow option can be used to provide any configuration _**except for parameters**_; see [docs](https://nf-co.re/docs/usage/getting_started/configuration#custom-configuration-files).
+Minimal PLINK PGEN example:
 
-For more details and further functionality, please refer to the [usage documentation](https://nf-co.re/regenie/usage) and the [parameter documentation](https://nf-co.re/regenie/parameters).
+```bash
+nextflow run CreRecombinase/nf-regenie \
+  -profile docker,pgen \
+  --pgen /path/to/cohort \
+  --phenoFile /path/to/pheno.tsv \
+  --covarFile /path/to/covar.tsv \
+  --pheno_col_list "T2D" \
+  --bt true \
+  --outdir results
+```
 
-## Pipeline output
+Tip: Put commonly used options in a params file and run with `-params-file params.yaml`.
 
-To see the results of an example test run with a full size dataset refer to the [results](https://nf-co.re/regenie/results) tab on the nf-core website pipeline page.
-For more details about the output files and reports, please refer to the
-[output documentation](https://nf-co.re/regenie/output).
+## Example: Params File
 
-## Credits
+This repository ships an example config: `params/regenie_example_simple.json`.
 
-nf-core/regenie was originally written by me.
+Run with BGEN inputs from that file:
 
-We thank the following people for their extensive assistance in the development of this pipeline:
+```bash
+nextflow run CreRecombinase/nf-regenie \
+  -profile wave,docker,bgen \
+  -params-file params/regenie_example_simple.json
+```
 
-<!-- TODO nf-core: If applicable, make list of people who have also contributed -->
+Or run the same file in BED mode (uses the `bed` prefix in the JSON):
 
-## Contributions and Support
+```bash
+nextflow run CreRecombinase/nf-regenie \
+  -profile wave,docker,bed \
+  -params-file params/regenie_example_simple.json
+```
 
-If you would like to contribute to this pipeline, please see the [contributing guidelines](.github/CONTRIBUTING.md).
+Notes:
+- The JSON includes both `bgen` and `bed` keys; the selected `-profile` (`bgen` or `bed`) decides which inputs are used.
+- The example uses S3 paths for inputs/outputs; use `-profile wave` or an environment with S3 access configured.
 
-For further information or help, don't hesitate to get in touch on the [Slack `#regenie` channel](https://nfcore.slack.com/channels/regenie) (you can join with [this invite](https://nf-co.re/join/slack)).
+## Inputs
 
-## Citations
+Genotypes (choose one mode via profile):
 
-<!-- TODO nf-core: Add citation for pipeline after first release. Uncomment lines below and update Zenodo doi and badge at the top of this file. -->
-<!-- If you use nf-core/regenie for your analysis, please cite it using the following doi: [10.5281/zenodo.XXXXXX](https://doi.org/10.5281/zenodo.XXXXXX) -->
+- BGEN mode (`-profile bgen`): `--bgen`, `--bgi`, `--sample`
+- BED mode (`-profile bed`): `--bed` (PLINK bed/bim/fam triplet)
+- PGEN mode (`-profile pgen`): `--pgen` (PLINK pgen/pvar/psam prefix)
 
-<!-- TODO nf-core: Add bibliography of tools and data used in your pipeline -->
+Phenotypes and covariates:
 
-An extensive list of references for the tools used by the pipeline can be found in the [`CITATIONS.md`](CITATIONS.md) file.
+- `--phenoFile`: TSV/CSV with phenotype columns
+- `--covarFile`: TSV/CSV with covariate columns
+- `--pheno_col_list`: Comma-separated list of phenotype columns
+- `--covar_col_list`, `--cat_covar_list`: Numeric and categorical covariates
 
-You can cite the `nf-core` publication as follows:
+Common analysis options:
 
-> **The nf-core framework for community-curated bioinformatics pipelines.**
->
-> Philip Ewels, Alexander Peltzer, Sven Fillinger, Harshil Patel, Johannes Alneberg, Andreas Wilm, Maxime Ulysse Garcia, Paolo Di Tommaso & Sven Nahnsen.
->
-> _Nat Biotechnol._ 2020 Feb 13. doi: [10.1038/s41587-020-0439-x](https://dx.doi.org/10.1038/s41587-020-0439-x).
+- Phenotype type: `--bt`, `--t2e` (binary / time-to-event)
+- Chromosomes: `--chr_list` (default human autosomes + X)
+- Step 1 tuning: `--bsize1`, `--cv`, `--loocv`, `--split_l0_n`
+- Step 2 tuning: `--bsize2`, `--firth`, `--approx`, `--spa`
+
+List all parameters:
+
+```bash
+nextflow run CreRecombinase/nf-regenie --help
+```
+
+## Configuration & Profiles
+
+Execution profiles (combine with commas):
+
+- Runtimes: `docker`, `singularity`, `apptainer`, `podman`, `conda`, `mamba`
+- Wave: `wave`
+- Phenotype presets: `binary`, `qt`, `t2e`
+- Genotype source: `bgen`, `bed`, `pgen`
+- Convenience: `nocv`, `splitl0`
+
+Examples:
+
+```bash
+-profile docker,bgen,binary
+-profile apptainer,pgen,qt
+```
+
+## Outputs
+
+The `--outdir` directory contains:
+
+- `pipeline_info/`: Nextflow reports (execution report, timeline, trace, DAG) and `params.json`
+- `multiqc/`: Consolidated QC report if enabled
+- REGENIE results: Step 1 predictions and Step 2 association results per chromosome/phenotype
+
+See `docs/output.md` for more details.
+
+## Reproducibility
+
+- Pin a release with `-r <tag>`
+- Update cache with `nextflow pull CreRecombinase/nf-regenie`
+- Prefer container profiles for consistent software
+
+## Contributing & Support
+
+- Contributing guidelines: `.github/CONTRIBUTING.md`
+- Issues: https://github.com/CreRecombinase/nf-regenie/issues
+- Community chat: Slack `#regenie` (https://nf-co.re/join/slack)
+
+## License
+
+MIT — see `LICENSE`.
+
+## Citation
+
+If this pipeline is useful in your work, please cite this repository. A DOI will be added after the first release.

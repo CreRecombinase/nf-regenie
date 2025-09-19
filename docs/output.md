@@ -1,4 +1,4 @@
-# nf-core/regenie: Output
+# CreRecombinase/nf-regenie: Output
 
 ## Introduction
 

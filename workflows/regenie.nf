@@ -57,15 +57,15 @@ workflow REGENIE {
         def g = params.bgen
         def i = params.bgi
         if( bgen_has_at ) { g = g.replace('@', chr); i = i ? i.replace('@', chr) : null }
-        return tuple(mode, g, i, params.sample, chr)
+        return tuple(s2_mode, g, i, params.sample, chr)
       } else if( s2_mode=='bed' ) {
         def p = params.bed
         if( bed_has_at ) p = p.replace('@', chr)
-        return tuple(mode, p, null, null, chr)
+        return tuple(s2_mode, p, null, null, chr)
       } else {
         def p = params.pgen
         if( pgen_has_at ) p = p.replace('@', chr)
-        return tuple(mode, p, null, null, chr)
+        return tuple(s2_mode, p, null, null, chr)
       }
     }
     shard_geno.set { GENO_STEP2 }
@@ -87,7 +87,9 @@ workflow REGENIE {
       Channel
         .from( (1..params.split_l0_n as List<Integer>) )
         .set { K_CH }
-      K_CH.combine(REGENIE_STEP1_SPLIT_INIT.out.master) \n          .map { k, master -> tuple(file(master), k) } \n          .set { L0_IN }
+      K_CH.combine(REGENIE_STEP1_SPLIT_INIT.out.master)
+        .map { k, master -> tuple(file(master), k) }
+        .set { L0_IN }
       REGENIE_STEP1_RUN_L0(L0_IN)
 
       REGENIE_STEP1_RUN_L1(REGENIE_STEP1_SPLIT_INIT.out.master)

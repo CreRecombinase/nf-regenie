@@ -17,7 +17,7 @@
                         "size": "Large",
                         "weight": "Bolder",
                         "color": "<% if (success) { %>Good<% } else { %>Attention<%} %>",
-                        "text": "nf-core/regenie v${version} - ${runName}",
+                        "text": "CreRecombinase/nf-regenie v${version} - ${runName}",
                         "wrap": true
                     },
                     {

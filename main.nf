@@ -1,9 +1,9 @@
 #!/usr/bin/env nextflow
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    nf-core/regenie
+    CreRecombinase/nf-regenie
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Github : https://github.com/nf-core/regenie
+    Github : https://github.com/CreRecombinase/nf-regenie
     Website: https://nf-co.re/regenie
     Slack  : https://nfcore.slack.com/channels/regenie
 ----------------------------------------------------------------------------------------

@@ -1,0 +1,20 @@
+{
+  "mode": "binary",
+  "outdir": "results/bgen_binary_splitl0",
+  "bgen": "/data/cohort/chr@.bgen",
+  "bgi": "/data/cohort/chr@.bgen.bgi",
+  "sample": "/data/cohort/cohort.sample",
+  "phenoFile": "/data/pheno/phenotypes_bin.txt",
+  "covarFile": "/data/pheno/covariates.txt",
+  "pheno_col_list": "Y_BIN",
+  "bt": true,
+  "split_l0_prefix": "fit_bin_parallel",
+  "split_l0_n": 4,
+  "bsize1": 100,
+  "bsize2": 200,
+  "firth": true,
+  "approx": true,
+  "pThresh": 0.01,
+  "gz": true,
+  "chr_list": "1,2,3"
+}

@@ -1,4 +1,4 @@
-# nf-core/regenie: Citations
+# CreRecombinase/nf-regenie: Citations
 
 ## [nf-core](https://pubmed.ncbi.nlm.nih.gov/32055031/)
 

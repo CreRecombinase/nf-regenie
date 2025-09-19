@@ -4,6 +4,19 @@
   "description": "Parameters for the nf-core REGENIE pipeline. Defines grouped inputs and options for Step 1/2, phenotypes/covariates, genotype sources, and I/O.",
   "type": "object",
   "$defs": {
+    "core": {
+      "title": "Core",
+      "type": "object",
+      "fa_icon": "fas fa-cog",
+      "description": "Core pipeline controls and logging.",
+      "properties": {
+        "validate_params": { "type": "boolean", "description": "Validate parameters at runtime using nf-schema plugin." },
+        "publish_dir_mode": { "type": "string", "enum": ["copy", "link", "symlink", "rellink", "move"], "description": "Publish mode for Nextflow output directories." },
+        "trace_report_suffix": { "type": "string", "description": "Suffix used for pipeline report file names." },
+        "input": { "type": ["string","null"], "default": null, "description": "Optional sample sheet path (not used by REGENIE)." },
+        "genomes": { "type": ["object","null"], "default": null, "description": "Optional genomes map (not used by REGENIE)." }
+      }
+    },
     "mode": {
       "title": "Analysis mode",
       "type": "object",
@@ -144,7 +157,7 @@
         "approx": { "type": "boolean", "default": true, "description": "Use approximate Firth LRT when --firth is enabled (--approx)." },
         "spa": { "type": "boolean", "description": "Use Saddlepoint approximation fallback for small p-values (--spa)." },
         "pThresh": { "type": "number", "default": 0.05, "minimum": 0, "maximum": 1, "description": "P-value threshold below which to apply Firth/SPA corrections (--pThresh)." },
-        "minMAC": { "type": "integer", "default": 5, "minimum": 0, "description": "Minimum minor allele count threshold when testing variants (--minMAC)." },
+        "minMAC": { "type": "number", "default": 5, "minimum": 0, "description": "Minimum minor allele count threshold when testing variants (--minMAC)." },
         "minINFO": { "type": ["number", "null"], "default": null, "description": "Minimum imputation info score for variant inclusion in Step 2 (--minINFO)." },
         "test_mode": { "type": ["string", "null"], "enum": [null, "additive", "dominant", "recessive"], "default": "additive", "description": "Genetic model to test in Step 2 (--test). Default: additive." },
         "gz": { "type": "boolean", "default": true, "description": "Gzip-compress REGENIE outputs (--gz)." },
@@ -196,6 +209,7 @@
     { "required": ["pgen"] }
   ],
   "allOf": [
+    { "$ref": "#/$defs/core" },
     { "$ref": "#/$defs/mode" },
     { "$ref": "#/$defs/io" },
     { "$ref": "#/$defs/genotype" },

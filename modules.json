@@ -1,6 +1,6 @@
 {
-    "name": "nf-core/regenie",
-    "homePage": "https://github.com/nf-core/regenie",
+    "name": "CreRecombinase/nf-regenie",
+    "homePage": "https://github.com/CreRecombinase/nf-regenie",
     "repos": {
         "https://github.com/nf-core/modules.git": {
             "modules": {

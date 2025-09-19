@@ -1,0 +1,26 @@
+{
+  "mode": "binary",
+  "outdir": "results/local_example",
+  "input_mode": "bgen",
+  "bgen": "./test_data/regenie_example/example_3chr.bgen",
+  "bgi": "./test_data/regenie_example/example_3chr.bgen.bgi",
+  "sample": "./test_data/regenie_example/example_3chr.sample",
+  "phenoFile": "./test_data/regenie_example/phenotype_bin.txt",
+  "covarFile": "./test_data/regenie_example/covariates.txt",
+  "pheno_col_list": "Y1",
+
+  "bt": true,
+
+  "bsize1": 100,
+  "lowmem": true,
+  "lowmem_prefix": "regenie_lowmem",
+
+  "bsize2": 200,
+  "minMAC": 5,
+  "firth": true,
+  "approx": true,
+  "pThresh": 0.01,
+  "test_mode": "additive",
+  "gz": true,
+  "chr_list": "1,2,3"
+}

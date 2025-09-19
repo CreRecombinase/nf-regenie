@@ -1,7 +1,7 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "$id": "https://raw.githubusercontent.com/nf-core/regenie/master/assets/schema_input.json",
-    "title": "nf-core/regenie pipeline - params.input schema",
+    "$id": "https://raw.githubusercontent.com/CreRecombinase/nf-regenie/master/assets/schema_input.json",
+    "title": "CreRecombinase/nf-regenie pipeline - params.input schema",
     "description": "Schema for the file provided with params.input",
     "type": "array",
     "items": {
