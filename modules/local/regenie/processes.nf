@@ -10,10 +10,10 @@ process REGENIE_STEP1 {
   tuple val(geno_mode), val(geno_main), val(bgi), val(sample)
   path pheno
   path covar
-  path keepfile, optional: true
-  path removefile, optional: true
-  path extractfile, optional: true
-  path excludefile, optional: true
+  val  keepfile
+  val  removefile
+  val  extractfile
+  val  excludefile
   val  pheno_cols
   val  event_cols
 
@@ -109,10 +109,10 @@ process REGENIE_STEP2_SNV {
   path pheno
   path covar
   path pred_list
-  path keepfile, optional: true
-  path removefile, optional: true
-  path extractfile, optional: true
-  path excludefile, optional: true
+  val  keepfile
+  val  removefile
+  val  extractfile
+  val  excludefile
 
   output:
   path "*.regenie*", emit: sumstats
@@ -195,10 +195,10 @@ process REGENIE_STEP1_SPLIT_INIT {
   tuple val(geno_mode), val(geno_main), val(bgi), val(sample)
   path pheno
   path covar
-  path keepfile, optional: true
-  path removefile, optional: true
-  path extractfile, optional: true
-  path excludefile, optional: true
+  val  keepfile
+  val  removefile
+  val  extractfile
+  val  excludefile
   val  pheno_cols
   val  event_cols
 

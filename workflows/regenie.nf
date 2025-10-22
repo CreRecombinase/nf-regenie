@@ -70,10 +70,10 @@ workflow REGENIE {
     }
     shard_geno.set { GENO_STEP2 }
 
-    def KEEP_CH    = params.keep    ? Channel.value(file(params.keep))       : Channel.value(null)
-    def REMOVE_CH  = params.remove  ? Channel.value(file(params.remove))     : Channel.value(null)
-    def EXTRACT_CH = params.extract ? Channel.value(file(params.extract))    : Channel.value(null)
-    def EXCLUDE_CH = params.exclude ? Channel.value(file(params.exclude))    : Channel.value(null)
+    def KEEP_CH    = params.keep    ? Channel.value(file(params.keep))       : Channel.value('')
+    def REMOVE_CH  = params.remove  ? Channel.value(file(params.remove))     : Channel.value('')
+    def EXTRACT_CH = params.extract ? Channel.value(file(params.extract))    : Channel.value('')
+    def EXCLUDE_CH = params.exclude ? Channel.value(file(params.exclude))    : Channel.value('')
     // Step 1: split-L0 orchestration (if requested) else simple
     if (params.split_l0_n && params.split_l0_prefix) {
       REGENIE_STEP1_SPLIT_INIT(
